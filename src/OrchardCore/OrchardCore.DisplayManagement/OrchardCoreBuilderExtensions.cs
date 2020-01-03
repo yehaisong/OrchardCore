@@ -48,7 +48,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     // Used as a service when we create a fake 'ActionContext'.
                     services.AddScoped<IAsyncViewActionFilter, RazorViewActionFilter>();
 
-                    services.AddSingleton<IViewBufferScope, NullViewBufferScope>();
+                    //services.AddSingleton<IViewBufferScope, NullViewBufferScope>();
 
                     services.AddScoped<IUpdateModelAccessor, LocalModelBinderAccessor>();
                     services.AddScoped<ViewContextAccessor>();
