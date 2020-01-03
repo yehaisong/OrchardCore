@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Buffers;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
@@ -46,6 +47,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     // Used as a service when we create a fake 'ActionContext'.
                     services.AddScoped<IAsyncViewActionFilter, RazorViewActionFilter>();
+
+                    services.AddSingleton<IViewBufferScope, NullViewBufferScope>();
 
                     services.AddScoped<IUpdateModelAccessor, LocalModelBinderAccessor>();
                     services.AddScoped<ViewContextAccessor>();

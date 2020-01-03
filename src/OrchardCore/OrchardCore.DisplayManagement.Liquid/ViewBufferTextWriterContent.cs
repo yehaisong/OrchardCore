@@ -75,7 +75,7 @@ namespace OrchardCore.DisplayManagement.Liquid
         {
             foreach (var fragment in _fragments)
             {
-                writer.Write(fragment);
+                fragment.WriteTo(writer, encoder);
             }
         }
 
