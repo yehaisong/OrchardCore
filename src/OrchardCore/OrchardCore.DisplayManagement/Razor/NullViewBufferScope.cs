@@ -41,6 +41,11 @@ namespace OrchardCore.DisplayManagement.Razor
             _writer.Write(value);
         }
 
+        public override void Write(char[] value)
+        {
+            _writer.Write(value);
+        }
+
         public override void Write(char[] buffer, int index, int count)
         {
             _writer.Write(buffer, index, count);
