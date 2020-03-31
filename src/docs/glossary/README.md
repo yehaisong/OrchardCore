@@ -4,23 +4,34 @@ List of terms and concepts that you can find in Orchard Core.
 
 They are grouped by roles: User, Theme designer, Administrator.
 
+If you think that there is a missing definition, or that a definition needs to be revised, updated, please create an issue or make a Pull Request.  
+Note that each definition should consist of:
+1.	A clear statement of what the item being defined is in an OrchardCore context
+2.	A clear statement of what the item does in an OrchardCore context
+3.	Clear examples of how the item is used in an OrchardCore context 
+
 ## Authenticated users
 
 ### Content Item
 
-A single document containing some content of a specific content type, that can be versioned and localized. Examples of content items are pages, blog posts and products. They are often associated with a unique URL (address) on the site.
+The consumable version of a piece of web content that can be published for display via a web browser. In the OrchardCore Admin GUI, it is created from a content type. It can be versioned, localized, and can have its own unique URL (depending on its Content Parts). The display of a Content Item can be restricted by a user’s assigned permissions via a role or otherwise. A few examples are a web page, a blog post, or a product listing.
 
 ### Content Item Version
 
 A single document that represent a specific version of a content item. These can be draft, published, or pasts versions
 
+### Content Definition Objects
+
+Objects in OrchardCore that determine the behavior, characteristics and type of content a Content Item can be made of. The Content Definition Objects are Content Part and a Content Type.
+
 ### Content Type
 
-Define the list of Content Parts and Content Fields a content item can be made of. An analogy is to compare them to classes, whose instances are the content items.
+A blueprint from which a content item is created. It defines what features and characteristics the content item can have. A Content Type is made up of Content Parts which help to define is features and behavior.
 
 ### Content Part
 
-Content parts are atoms of content that are enough to build a specific coherent behavior and that can be reused across content types.
+
+A Content Part is smallest content building component in OrchardCore. It defines a specific feature or a specific behavior of a content type. A single Content Part can be used across multiple Content Types.
 See [Content Parts](../reference/modules/ContentParts)
 
 ### Content Field
@@ -38,7 +49,7 @@ A field can have different Editors (Ex: The value of a Numeric Field can be set 
 
 ### Autoroute
 
-A part that dynamically creates and registers a url to access a content item. It can use a Liquid pattern to be automatically generated.
+A Content Part that can be added to a Content Type to provide a dynamic URL feature. This allows any Content Item built from the resulting Content Type to be directly accessible via a web address. An Autoroute can use a Liquid pattern to automatically generate the desired URL.
 See [Autoroute](../reference/modules/Autoroute)
 
 ### Bag
@@ -120,7 +131,8 @@ See [Resources](../reference/modules/Resources)
 
 ### Shape
 
- [GitHub Discussion](https://github.com/OrchardCMS/OrchardCore/issues/4121#issuecomment-539608731)
+An OrchardCore object used to dynamically render HTML content. A Shape defines the type of content to be rendered and it receives its instructions on how to display the content it will render from a template. This makes the shape able to dynamically adapt the way it displays its content based the templates it receives from any OrchardCore theme.  
+See [GitHub Discussion](https://github.com/OrchardCMS/OrchardCore/issues/4121#issuecomment-539608731)
 
 ### Template
 
@@ -133,7 +145,7 @@ A section in the Layout (ex: Footer) in which you can render items.
 
 ### Layer
 
-A display Rule in which you specify a condition to be rendered (ex: isHomepage()).  
+A display rule that defines the condition when a widget will be displayed. (ex: isHomepage()).  
 See [Layers](../reference/modules/Layers)
 
 ### Stereotype
@@ -143,8 +155,8 @@ Examples of this include the Menu Stereotype, and the Widget Stereotype.
 
 ### Widget
 
-A content displayed in a specific zone and layer.  
-It has the `Widget` stereotype in its content definition.
+A widget is used to designate a prebuilt Content Item that can be used in a layer. This allows the content item to be displayed on multiple pages at once. Examples are a Menu, Footer, or Header.  
+see [Widgets](../reference/modules/Widgets/)
 
 ### Flow
 
