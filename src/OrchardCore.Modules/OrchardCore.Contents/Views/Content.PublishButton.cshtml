@@ -4,12 +4,12 @@
 }
 @if (String.IsNullOrWhiteSpace(returnUrl))
 {
-    <button type="submit" name="submit.Publish" class="publish-button btn btn-success" value="submit.Publish">@T["Publish"]</button>
+    <button id="btn-submit-publish" type="submit" name="submit.Publish" class="publish-button btn btn-success" value="submit.Publish">@T["Publish"]</button>
 }
 else
 {
     <div class="btn-group">
-        <button class="publish-button btn btn-success" type="submit" name="submit.Publish" value="submit.Publish">@T["Publish"]</button>
+        <button id="btn-submit-publish" class="publish-button btn btn-success" type="submit" name="submit.Publish" value="submit.Publish">@T["Publish"]</button>
         <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-reference="parent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span class="sr-only">@T["Toggle Dropdown"]</span>
         </button>

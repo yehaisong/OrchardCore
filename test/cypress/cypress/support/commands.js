@@ -1,32 +1,20 @@
 import { creds } from './objects';
 
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add("login", (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add("drag", { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add("dismiss", { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This is will overwrite an existing command --
-// Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+Cypress.Commands.add('newTenant', function(tenantInfo) {
+    cy.saasLogin();
+    cy.createTenant(tenantInfo);
+    cy.gotoTenantSetup(tenantInfo);
+    cy.setupSite(tenantInfo);
+});
 
-Cypress.Commands.add('login', function({ prefix = '' } = {}) {
+Cypress.Commands.add('saasLogin', function() {
+    cy.visit(`/login`);
+    cy.get('#UserName').type(creds.username);
+    cy.get('#Password').type(creds.password);
+    cy.get('form').submit();
+});
+
+Cypress.Commands.add('tenantLogin', function({prefix}) {
     cy.visit(`${prefix}/login`);
     cy.get('#UserName').type(creds.username);
     cy.get('#Password').type(creds.password);
@@ -34,7 +22,7 @@ Cypress.Commands.add('login', function({ prefix = '' } = {}) {
 });
 
 Cypress.Commands.add('gotoTenantSetup', ({ name }) => {
-    cy.visit('/OrchardCore.Tenants/Admin/Index');
+    cy.visit('/Admin/Tenants');
     cy.get(`#btn-setup-${name}`).click();
 });
 Cypress.Commands.add('setupSite', ({ name, setupRecipe, username, email, password, passwordConfirmation }) => {
@@ -57,7 +45,7 @@ Cypress.Commands.add('setupSite', ({ name, setupRecipe, username, email, passwor
 });
 Cypress.Commands.add('createTenant', ({ name, prefix }) => {
     // We create tenants on the SaaS tenant
-    cy.visit('/OrchardCore.Tenants/Admin/Index');
+    cy.visit('/Admin/Tenants');
     cy.get('#btn-add-tenant').click();
     cy.get('#Name').type(name);
     cy.get('#RequestUrlPrefix').type(prefix);
@@ -65,12 +53,12 @@ Cypress.Commands.add('createTenant', ({ name, prefix }) => {
 });
 
 Cypress.Commands.add('runRecipe', ({ prefix }, recipeName) => {
-    cy.visit(`${prefix}/OrchardCore.Recipes/Admin/Index`);
+    cy.visit(`${prefix}/Admin/Recipes`);
     cy.get(`[data-run-button="${recipeName}"]`).click();
     cy.get('#modalOkButton').click();
 });
 Cypress.Commands.add('visitAdmin', ({ prefix }) => {
-    cy.visit(`${prefix}/admin`);
+    cy.visit(`${prefix}/Admin`);
 });
 Cypress.Commands.add('visitTenantPage', ({ prefix }, url) => {
     cy.visit(`${prefix}/${url}`);

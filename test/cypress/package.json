@@ -1,17 +1,19 @@
 {
   "devDependencies": {
-    "cypress": "^3.4.1",
+    "cypress": "^4.5.0",
     "faker": "^4.1.0",
-    "rimraf": "^2.6.2"
+    "rimraf": "^3.0.2",
+    "lodash": "^4.17.15"
   },
-  "dependencies": {},
   "scripts": {
-    "build": "node -e \"require('./test').build('../../src/OrchardCore.Cms.Web')\"",
-    "clean": "node -e \"require('./test').clean('../../src/OrchardCore.Cms.Web')\"",
-    "host": "node -e \"require('./test').host('../../src/OrchardCore.Cms.Web', 'OrchardCore.Cms.Web.dll')\"",
-    "test": "node -e \"require('./test').e2e('../../src/OrchardCore.Cms.Web', 'OrchardCore.Cms.Web.dll')\"",
-    "test:clean": "node -e \"require('./test').e2e('../../src/OrchardCore.Cms.Web', 'OrchardCore.Cms.Web.dll', true)\"",
-    "test:clean-build": "node -e \"require('./test').e2e('../../src/OrchardCore.Cms.Web', 'OrchardCore.Cms.Web.dll', true, true)\"",
+    "build": "node -e \"require('./runner').build('../../src/OrchardCore.Cms.Web')\"",
+    "build:debug": "node -e \"require('./runner').build('../../src/OrchardCore.Cms.Web', true)\"",
+    "clean": "node -e \"require('./runner').clean('../../src/OrchardCore.Cms.Web')\"",
+    "host": "node -e \"require('./runner').host('../../src/OrchardCore.Cms.Web', 'OrchardCore.Cms.Web.dll')\"",
+    "host:debug": "node -e \"require('./runner').host('../../src/OrchardCore.Cms.Web', 'OrchardCore.Cms.Web.dll', true)\"",
+    "test": "node -e \"require('./runner').e2e('../../src/OrchardCore.Cms.Web', 'OrchardCore.Cms.Web.dll')\"",
+    "test:clean": "node -e \"require('./runner').e2e('../../src/OrchardCore.Cms.Web', 'OrchardCore.Cms.Web.dll', true)\"",
+    "test:clean-build": "node -e \"require('./runner').e2e('../../src/OrchardCore.Cms.Web', 'OrchardCore.Cms.Web.dll', true, true)\"",
     "cypress": "cypress run --config video=false",
     "cypress:open": "cypress open"
   }

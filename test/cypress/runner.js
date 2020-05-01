@@ -8,9 +8,13 @@ global.log = function(msg) {
     console.log(`[${now}] ${msg}\n`);
 };
 
-function build(dir) {
-    global.log('Building ...');
-    child_process.spawnSync('dotnet', ['build', '-c', 'release'], { cwd: dir });
+function build(dir, debug) {
+    global.log(`Building in ${debug ? "debug": "release"} mode ...`);
+    if(debug){
+        child_process.spawnSync('dotnet', ['build'], { cwd: dir });
+    } else {
+        child_process.spawnSync('dotnet', ['build', '-c', 'release'], { cwd: dir });
+    }
 }
 function clean(dir) {
     rimraf(path.join(dir, 'App_Data'), function() {
@@ -18,14 +22,20 @@ function clean(dir) {
     });
 }
 
-function host(dir, assembly) {
-    if (fs.existsSync(path.join(dir, 'bin/release/netcoreapp3.0/', assembly))) {
+function host(dir, assembly, debug = false) {
+    const dllPath = `bin/${debug ? "debug": "release"}/netcoreapp3.1/${assembly}`
+    if (fs.existsSync(path.join(dir, dllPath))) {
         global.log('Application already built, skipping build');
     } else {
-        build(dir);
+        build(dir, debug);
     }
-    global.log('Starting application ...');
-    let server = child_process.spawn('dotnet', ['bin/release/netcoreapp3.0/' + assembly], { cwd: dir });
+    global.log(`Starting application in ${debug ? "debug": "release"} mode...`);
+    let server;
+    if(debug){
+        server = child_process.spawn('dotnet', ['run'], { cwd: dir });
+    } else {
+        server = child_process.spawn('dotnet', [dllPath], { cwd: dir });
+    }
 
     server.stdout.on('data', data => {
         global.log(data);
@@ -52,7 +62,7 @@ module.exports = {
             build(dir);
         }
 
-        if (fs.existsSync(path.join(dir, 'bin/release/netcoreapp3.0/', assembly))) {
+        if (fs.existsSync(path.join(dir, 'bin/release/netcoreapp3.1/', assembly))) {
             global.log('Application already built, skipping build');
         } else {
             build(dir);
