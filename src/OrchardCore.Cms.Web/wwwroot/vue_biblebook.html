@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    </head>
+    <body class="p-2">
+
+
+        <div id="app">
+            <div class="alert alert-primary">
+                <h4>json data <button v-on:click="showjson">{{btnToggleText}}</button></h4>
+                <div v-if="show">
+                    {{info}}
+                </div>
+            </div> 
+
+                <book-item v-for="item in info" v-bind:book="item" v-bind:title="item.bbnEName">
+                </book-item>
+
+        </div>
+
+        <script>
+            Vue.component("book-item",{
+                props:["book"],
+                template:"<div class='row'><div class='col'>{{book.bbnEName}}</div><div class='col'>{{book.bbnSCName}}</div></div>"
+            })
+
+            var app=new Vue({
+                el:"#app",
+                data(){
+                    return {
+                        show:false,
+                        btnToggleText:"+",
+                        info: null
+                    }
+                },
+                mounted(){
+                    axios
+                    .get('http://localhost:5000/api/graphql?query={bibleBook(orderBy:{contentItemId:ASC}){bbnChapTotal,bbnCode,bbnEName,bbnEShortName,bbnETitle,bbnId,bbnSCName,bbnSCShortName,bbnSCTitle,bbnTCName,bbnTCShortName,bbnTCTitle}}')
+                    .then(response=>(this.info=response.data.data.bibleBook))
+                },
+                methods:{
+                    showjson:function(){
+                        this.show=!this.show;
+                        if(this.show) this.btnToggleText="-"
+                         else this.btnToggleText="+"
+                    }
+                }
+            })
+            
+        </script>
+
+        
+
+    </body>
+</html>

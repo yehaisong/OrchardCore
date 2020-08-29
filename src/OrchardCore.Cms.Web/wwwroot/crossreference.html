@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <title></title>
+
+        <style>
+        span.positive, span.negative{
+            height:20px;
+            width: 0px;
+            display: block;
+            margin-left:100px;
+            font-size: 9pt;
+        }
+
+        span.positive{
+            background-color:lightgreen;
+            
+        }
+        span.negative{
+            background-color:gold;
+        }
+        </style>
+
+    </head>
+    <body class="p-2">
+        
+        <div id="app">
+            
+            <div class="container">
+                <div class="row p-3">
+                    <div class="col-sm-2">
+                            <select v-on:change="onBookChange()" id="bibBook" class="w-100">
+                                <option v-for="item in bBook" v-bind:value="item.contentItemId">{{item.bbnEName}}</option> 
+                            </select>
+                    </div>
+                    <div class="col-sm-2">
+                            <select v-on:change="onChange()" id="bibChapter" class="w-100">
+                                <option v-for="item in bChapter" v-bind:value="item.contentItemId">{{item.displayText}} {{item.eTitle}}</option> 
+                            </select>
+                    </div>
+                    <div class="col-sm-2">
+                            <select v-on:change="onChange()" id="bibVersion" class="w-100">
+                                <option v-for="item in bVersion" v-bind:value="item.ContentItemId">{{item.ContentItemId}}</option> 
+                            </select>
+                    </div>
+                    <div class="col-sm-6">
+
+                    </div>
+                </div>
+                <div class="row ">
+                    <div class="col-sm overflow-auto">
+                        <!--Display Scripture-->
+                        <ol>
+                            <verse-item v-for="item in scriptures" v-bind:verse="item" v-bind:title="item.displayText" v-bind:id="item.contentItemId">
+                            </verse-item>
+                        </ol>
+                        <!--Nav Button-->
+                        <div id="chapternav" class="text-center p-3">
+                           <a href="#" v-on:click="getPreChap"><svg  class="bi bi-arrow-left-circle-fill" width="2em" height="2em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-7.646 2.646a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L6.207 7.5H11a.5.5 0 0 1 0 1H6.207l2.147 2.146z"/>
+                              </svg></a>
+                            <a href="#" v-on:click="getNextChap"><svg class="bi bi-arrow-right-circle-fill" width="2em" height="2em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-8.354 2.646a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L9.793 7.5H5a.5.5 0 0 0 0 1h4.793l-2.147 2.146z"/>
+                                </svg></a>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="row">
+                    <div class="col-sm">
+                        <!--Json Data Check-->
+                        <div class="alert alert-primary mt-3">
+                            <h4>scriptures <button v-on:click="showjson">{{btnToggleText}}</button></h4>
+                            <div v-if="show">
+                                {{scriptures}}
+                            </div>
+                        </div> 
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+        
+
+        <script>
+            //Component for cross reference scripture
+            Vue.component("cf-verse-item",{
+                props:["cf-verse"],
+                template:'<label>xx1</lable>'
+            })
+
+            //Component for scripture
+            Vue.component("verse-item",{
+                inheriAttrs:false,
+                props:["verse"],
+                template:'<li> {{verse.scripture}}'
+                        +'<button class="btn btn-link" v-bind:fromVerseNo=\"verse.bibVerseId\" @click="getCrossReference">[CF]</button>'
+                        +'<div class="cf" v-bind:id=\"verse.bibVerseId\"></div></li>',
+                methods:{
+                    getCrossReference(e){
+                        
+                    
+                        var cfs=document.getElementsByClassName("cf");
+                        for(var x =0;x<cfs.length;x++)
+                        {
+                            cfs[x].innerHTML="";
+                        }
+                    
+                        var div_cf=e.target.nextSibling;
+                        //alert(div_cf.id);
+
+                        axios
+                        .get('/api/queries/getCrossReferenceByVerseNo?parameters={bibleverseNo:"'+ div_cf.id +'"}')
+                        .then((function(response){
+                            //alert(response.data);
+                            html='<table class="table table-striped text-nowrap">';
+                            for(var i=0;i<response.data.length;i++)//this one has not been completed
+                            {
+                                
+                                score=response.data[i].score;
+                                toVerseStart=response.data[i].toVerseStart.toString();
+                                toVerseEnd=response.data[i].toVerseEnd.toString();
+                                console.log(toVerseStart.length);
+                                if(score>=0)
+                                    html+='<tr><td><a target="_blank" href=\'/api/queries/getVerseByRange?parameters={startno:"'+ (toVerseStart.length<9?("0"+toVerseStart):toVerseStart) +'",endno:"'+(toVerseEnd.length<9?("0"+toVerseEnd):toVerseEnd)+'",version:"'+bibVersion.value+'"}\'>'+response.data[i].toVerse+'</button></td><td><span class="positive" style="width:'+score+'px;padding-left:'+0+'px">'+score+'</span></td></tr>';
+                                else
+                                    html+='<tr><td><a target="_blank" href=\'/api/queries/getVerseByRange?parameters={startno:"'+ (toVerseStart.length<9?("0"+toVerseStart):toVerseStart) +'",endno:"'+(toVerseEnd.length<9?("0"+toVerseEnd):toVerseEnd)+'",version:"'+bibVersion.value+'"}\'>'+response.data[i].toVerse+'</button></td><td><span class="negative" style="width:'+Math.abs(score)+'px;margin-left:'+(100-Math.abs(score))+'px;padding-left:'+0+'px">'+score+'</span>'+'</td></tr>';
+                                
+                                /*
+                                axios
+                                .get('/api/queries/getVerseByRange?parameters={startno:"'+ response.data[i].toVerseStart +'",endno:"'+response.data[i].toVerseEnd+'",version:"'+bibVersion.value+'"}')
+                                .then((function(response){
+                                    html+='<tr><td colspan="2">'+response.data+"</td></tr>";
+                                }));
+                                */
+                            }
+                            
+                            div_cf.innerHTML=html+'</table>';
+
+                            
+                        }));
+
+                        //div_cf.innerHTML='<strong>'+div_cf.id+'</strong>';
+
+                        this.$emit('click');
+                    }
+                    
+                }
+            })
+
+            var app=new Vue({
+                el:"#app",
+                data(){
+                    return {
+                        show:false,
+                        btnToggleText:"+",
+                        scriptures: null,
+                        bVersion: null,
+                        bBook:null,
+                        bChapter:null,
+                        navtopics:null
+                    }
+                },
+                mounted(){
+                    //load book default Gen
+                    axios
+                    .get('/api/graphql?query='
+                        +'{bibleBook (orderBy: {contentItemId: ASC}) {'
+                        +'bbnEName,'
+                        +'contentItemId}}')
+                    .then(response=>(this.bBook=response.data.data.bibleBook));
+                    //load chapter default Gen 1
+                    axios
+                    .get('/api/graphql?query='
+                        +'{bibleChapter (orderBy: {contentItemId: ASC}, where: {alias: {alias_starts_with: "01"}}) {'
+                        +'displayText,eTitle,'
+                        +'contentItemId}}')
+                    .then(response=>(this.bChapter=response.data.data.bibleChapter));
+                    //load version 
+                    axios
+                    .get('/api/queries/getBibleVersions2')
+                    .then(response=>(this.bVersion=response.data));
+                    
+                    //load default UNS Book 1
+                    axios
+                    .get('/api/graphql?query='
+                        +'{bibleVerse(where: {alias: {alias_starts_with: "01001"}, AND: {alias: {alias_ends_with: "UNS"}}},'
+                        +'orderBy: {contentItemId: ASC})'
+                        +'{contentItemId, bibVerseId,displayText,scripture,verse,bibBCVold,bibBCV,bbnId}}')
+                    .then(response=>(this.scriptures=response.data.data.bibleVerse));
+                    
+                    //set document title
+                    //set default version to UNS
+                    setTimeout(function(){bibVersion.selectedIndex=4;document.title=bibChapter.options[bibChapter.selectedIndex].text;},1000)
+                },
+                methods:{
+                    showjson:function(){
+                        this.show=!this.show;
+                        if(this.show) this.btnToggleText="-"
+                         else this.btnToggleText="+"
+                    },
+                    onBookChange:function(){
+                        //load first chapter of the selected book
+                        axios
+                        .get('/api/graphql?query='
+                            +'{bibleVerse(where: {alias: {alias_starts_with: "'+bibBook.value.substr(0,2)+'001"}, AND: {alias: {alias_ends_with: "'+bibVersion.value+'"}}},'
+                            +'orderBy: {contentItemId: ASC})'
+                            +'{contentItemId, bibVerseId,displayText,scripture,verse,bibBCVold,bibBCV,bbnId}}')
+                        .then(response=>(this.scriptures=response.data.data.bibleVerse));
+                        //load chapter list of the selected book
+                        axios
+                        .get('/api/graphql?query='
+                            +'{bibleChapter (orderBy: {contentItemId: ASC}, where: {alias: {alias_starts_with: "'+bibBook.value.substr(0,2)+'"}}) {'
+                            +'displayText,eTitle,'
+                            +'contentItemId}}')
+                        .then(response=>(this.bChapter=response.data.data.bibleChapter));
+                        bibChapter.selectedIndex=0;
+                        this.clearCF();
+                    },
+                    onChange:function(){
+                        ////load selected chapter
+                        axios
+                        .get('/api/graphql?query='
+                            +'{bibleVerse(where: {alias: {alias_starts_with: "'+bibChapter.value.substr(0,5)+'"}, AND: {alias: {alias_ends_with: "'+bibVersion.value+'"}}},'
+                            +'orderBy: {contentItemId: ASC})'
+                            +'{contentItemId, bibVerseId,displayText,scripture,verse,bibBCVold,bibBCV,bbnId}}')
+                        .then(response=>(this.scriptures=response.data.data.bibleVerse));
+                        this.clearCF();
+                    },
+                    getNextChap:function(){
+                        if(bibChapter.selectedIndex<bibChapter.length-1)
+                        {
+                            bibChapter.selectedIndex++;
+                            this.onChange();
+                        }
+                        else if(bibBook.selectedIndex<bibBook.length-1)
+                        {
+                            bibBook.selectedIndex++;
+                            this.onBookChange();
+                        }
+                    },
+                    getPreChap:function(){
+                        if(bibChapter.selectedIndex>0)
+                        {
+                            bibChapter.selectedIndex--;
+                            this.onChange();
+                        }
+                        else if(bibBook.selectedIndex>0)
+                        {
+                            bibBook.selectedIndex--;
+                            this.onBookChange();
+                            setTimeout(function(){bibChapter.selectedIndex=bibChapter.length-1},500)
+                            this.onChange();
+
+                        }
+                    },
+                    clearCF()
+                    {
+                        var cfs=document.getElementsByClassName("cf");
+                        for(var x =0;x<cfs.length;x++)
+                        {
+                            cfs[x].innerHTML="";
+                        }
+                    },
+                    getVerse()
+                    {
+                        alert("not implemented");
+                    }
+                }
+            })
+            
+        </script>
+
+        
+
+    </body>
+</html>

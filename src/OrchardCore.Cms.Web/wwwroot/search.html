@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta charset="UTF-8">
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    </head>
+    <body class="p-2">
+        <div id="search">
+            Full text search: 
+            <select id="bibVersion">
+                <option v-for="item in bVersion" v-bind:value="item.ContentItemId">{{item.ContentItemId}}</option> 
+            </select>
+            <input v-model="searchtext">
+            <button v-on:click="searchFullText">Search</button>
+
+            <div class="alert alert-primary mt-3">
+                <h4>json data <button v-on:click="showjson">{{btnToggleText}}</button></h4>
+                <div v-if="show">
+                    {{info}}
+                </div>
+            </div> 
+            <ul>
+                <verse-item v-for="item in info" v-bind:verse="item" v-bind:title="item.ContentItemId" v-bind:id="item.ContentItemId">
+                </verse-item>
+            </ul>
+        </div>
+
+        
+
+        <script>
+            var keyword="";
+
+            Vue.component("verse-item",{
+                props:["verse"],
+                template:"<li> {{verse.DisplayText}} <br><div v-html=\"verse.BibleVerse.Scripture.Text.replace(keyword,'<mark>'+keyword+'</mark>')\"></div></li>"
+            })
+
+            var app=new Vue({
+                el:"#search",
+                data(){
+                    return {
+                        show:false,
+                        btnToggleText:"+",
+                        info: null,
+                        bVersion: null,
+                        searchtext:"",
+                    }
+                },
+                mounted(){
+                    axios
+                    .get('/api/queries/getBibleVersions2')
+                    .then(response=>(this.bVersion=response.data))
+                },
+                methods:{
+                    searchFullText:function(){
+                        axios
+                        .get('/api/queries/searchFullScripture?parameters={text:\'"'+ this.searchtext +'"\',version:\''+ bibVersion.value +'\'}')
+                        .then(response=>(this.info=response.data));
+                        keyword=this.searchtext;
+                    },
+                    showjson:function(){
+                        this.show=!this.show;
+                        if(this.show) this.btnToggleText="-"
+                         else this.btnToggleText="+"
+                    }
+                }
+            })
+            
+        </script>
+
+        
+
+    </body>
+</html>

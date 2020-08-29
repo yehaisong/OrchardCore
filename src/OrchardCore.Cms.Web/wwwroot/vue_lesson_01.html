@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    </head>
+    <body class="p-2">
+
+        <h1>Lesson One Examples</h1>
+       
+        <h2>Declarative Rendering</h2>
+        <div id='app'>
+            {{message}}
+        </div>
+
+        
+        <div id='app-2'>
+            <span v-bind:title="message">
+                Hover your mouse over me for a few seconds to see my dynamically bound title!
+                {{message}}
+            </span>
+        </div>
+
+        <script>
+            var app=new Vue({
+                el:'#app',
+                data:{
+                    message:'Hello Vue!'
+                }
+            })
+
+            var app2=new Vue({
+                el:'#app-2',
+                data:{
+                    message: 'You loaded this page on '+new Date().toLocaleString()
+                }
+                //app2.message="good"
+            })
+        </script>
+
+
+        <h2>Conditionals and Loops</h2>
+        <div id='condition_demo'>
+            <span v-if="seen">Now you see me</span>
+        </div>
+
+        <script>
+        var app3=new Vue({
+            el:'#condition_demo',
+            data: {
+                seen:true
+            }
+            //app3.seen=false
+        })
+    </script>
+
+    <div id="loop">
+        <ul>
+            <li v-for="todo in todolist">
+                {{todo.text}}
+            </li>
+        </ul>
+    </div>
+
+    <script>
+        var app4=new Vue({
+            el:"#loop",
+            data:{
+                todolist:[
+                    {text:'Learn JavaScript'},
+                    {text:'Learn Vue'},
+                    {text:'Build something awesome'}
+                ]
+            }
+            //use app4.todolist.push({text:'new item'}) to add new item
+        })
+    </script>
+
+    <h2>Handling User Input</h2>
+
+    <div id='method'>
+        <p>{{message}}</p>
+        <button v-on:click="reverseMessage">Reverse Message</button>
+    </div>
+
+    <script>
+        var app5=new Vue({
+            el:'#method',
+            data:{
+                message:'Hello Vue.js!'
+            },
+            methods:{
+                reverseMessage:function(){
+                    this.message=this.message.split(' ').reverse().join(' ')
+                }
+            }
+        })
+    </script>
+
+    <div id="textbox">
+        <p>{{message}}</p>
+        <input v-model="message">
+    </div>
+
+    <script>
+        var app6=new Vue({
+            el:"#textbox",
+            data:{
+                message: 'Hello Vue!'
+            }
+        })
+    </script>
+
+
+    <h2>Composing with Components</h2>
+
+    <div id="todo2">
+        <ol>
+            <todo-item
+                v-for="item in todolist" 
+                v-bind:todo="item"
+                v-bind:key="item.id"
+            ></todo-item>
+        </ol>
+    </div>
+
+    <script>
+        Vue.component('todo-item',{//the name of the component will be used as a tag
+            props: ['todo'], //property. will be used for v-bind indicates an object
+            template: '<li>{{todo.text}}</li>'
+        })
+
+        var app7=new Vue({
+            el:"#todo2",
+            data:{
+                todolist:[
+                    {id:0,text:"Vegetables"},
+                    {id:1,text:"Milk"},
+                    {id:2,text:"Cheese"}
+                ]
+            }
+        })
+    </script>
+
+    </body>
+</html>
