@@ -9,14 +9,14 @@ namespace OrchardCore.Cms.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOrchardCms();
-            services.AddCors(options=>{
+            /* services.AddCors(options=>{
                 options.AddPolicy("AllowAll",
                     builder=>
                     {
                         builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials();
                     }
                 );
-            });
+            }); */
         }
 
         public void Configure(IApplicationBuilder app, IHostEnvironment env)
@@ -30,7 +30,7 @@ namespace OrchardCore.Cms.Web
 
             app.UseOrchardCore();
 
-            app.UseCors("AllowAll");
+            //app.UseCors("AllowAll");
         }
     }
 }
