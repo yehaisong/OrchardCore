@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <title></title>
+
+        <style>
+        span.positive, span.negative{
+            height:20px;
+            width: 0px;
+            display: block;
+            margin-left:100px;
+            font-size: 9pt;
+        }
+
+        span.positive{
+            background-color:lightgreen;
+            
+        }
+        span.negative{
+            background-color:gold;
+        }
+        </style>
+
+    </head>
+    <body class="p-2">
+        
+        <div id="app">
+            
+            <div class="container">
+                <div class="row p-3">
+                    <div class="col-sm-4">
+                            <select v-on:change="onBookChange()" id="bibBook" class="w-100">
+                                <option v-for="item in bBook" v-bind:value="item.bookid">{{item.engs}}</option> 
+                            </select>
+                    </div>
+                   
+                    <div class="col-sm-8">
+
+                    </div>
+                </div>
+                <div class="row ">
+                    <div class="col-sm overflow-auto">
+                        <!--Display Scripture-->
+                        <div id="bookcommentary" v-html="commentary.row_txt">Loading ...</div>
+                        <!--Nav Button-->
+                        
+                        
+                    </div>
+                    
+                </div>
+                <div class="row">
+                    <div class="col-sm">
+                        <!--Json Data Check-->
+                        <div class="alert alert-primary mt-3">
+                            <h4>bible books <button v-on:click="showjson">{{btnToggleText}}</button></h4>
+                            <div v-if="show">
+                                {{bBook}}
+                            </div>
+                            <div v-if="show">
+                                {{commentary}}
+                            </div>
+                        </div> 
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+        
+
+        <script>
+            //Component for cross reference scripture
+            /*
+            Vue.component("cf-verse-item",{
+                props:["cf-verse"],
+                template:'<label>xx1</lable>'
+            })
+
+            //Component for scripture
+            Vue.component("verse-item",{
+                inheriAttrs:false,
+                props:["verse"],
+                template:'<li> {{verse.scripture}}'
+                        +'<button class="btn btn-link" v-bind:fromVerseNo=\"verse.bibVerseId\" @click="getCrossReference">[CF]</button>'
+                        +'<div class="cf" v-bind:id=\"verse.bibVerseId\"></div></li>',
+                methods:{
+                    getCrossReference(e){
+                    
+                    }
+                    
+                }
+            })*/
+
+            var app=new Vue({
+                el:"#app",
+                data(){
+                    return {
+                        show:false,
+                        btnToggleText:"+",
+                        commentary: "row_txt:'loading'",
+                        bVersion: null,
+                        bBook:null
+                    }
+                },
+                mounted(){
+                    //load book default Gen, UNS
+                    axios
+                    .get('/api/queries/GetCommentaryBooks')
+                    .then(response=>(this.bBook=response.data));
+                    
+                    //load commentary for GEN
+                    axios
+                        .get('/api/queries/GetCommentaryByBook?parameters={bookid:1}')
+                        .then(response=>(this.commentary=response.data[0]));
+                    
+                    //set document title
+                    //set default version to UNS
+                    //setTimeout(function(){bibVersion.selectedIndex=4;document.title=bibChapter.options[bibChapter.selectedIndex].text;},1000)
+                },
+                methods:{
+                    showjson:function(){
+                        this.show=!this.show;
+                        if(this.show) this.btnToggleText="-"
+                         else this.btnToggleText="+"
+                    },
+                    onBookChange:function(){
+                        //load first chapter of the selected book
+                        axios
+                        .get('/api/queries/GetCommentaryByBook?parameters={bookid:\''+ bibBook.value +'\'}')
+                        .then(response=>(this.commentary=response.data[0]));    
+                    }
+                }
+            })
+            
+        </script>
+
+        
+
+    </body>
+</html>
