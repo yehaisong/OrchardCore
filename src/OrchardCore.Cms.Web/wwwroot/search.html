@@ -51,13 +51,13 @@
                 },
                 mounted(){
                     axios
-                    .get('/api/queries/getBibleVersions2')
+                    .get('api/queries/getBibleVersions2')
                     .then(response=>(this.bVersion=response.data))
                 },
                 methods:{
                     searchFullText:function(){
                         axios
-                        .get('/api/queries/searchFullScripture?parameters={text:\'"'+ this.searchtext +'"\',version:\''+ bibVersion.value +'\'}')
+                        .get('api/queries/searchFullScripture?parameters={text:\'"'+ this.searchtext +'"\',version:\''+ bibVersion.value +'\'}')
                         .then(response=>(this.info=response.data));
                         keyword=this.searchtext;
                     },

@@ -109,12 +109,12 @@
                 mounted(){
                     //load book default Gen, UNS
                     axios
-                    .get('/api/queries/GetCommentaryBooks')
+                    .get('api/queries/GetCommentaryBooks')
                     .then(response=>(this.bBook=response.data));
                     
                     //load commentary for GEN
                     axios
-                        .get('/api/queries/GetCommentaryByBook?parameters={bookid:1}')
+                        .get('api/queries/GetCommentaryByBook?parameters={bookid:1}')
                         .then(response=>(this.commentary=response.data[0]));
                     
                     //set document title
@@ -130,7 +130,7 @@
                     onBookChange:function(){
                         //load first chapter of the selected book
                         axios
-                        .get('/api/queries/GetCommentaryByBook?parameters={bookid:\''+ bibBook.value +'\'}')
+                        .get('api/queries/GetCommentaryByBook?parameters={bookid:\''+ bibBook.value +'\'}')
                         .then(response=>(this.commentary=response.data[0]));    
                     }
                 }

@@ -67,7 +67,7 @@
                 methods:{
                     searchFullText:function(){
                         axios
-                        .get('/api/queries/searchNaveTopic?parameters={keyword:\''+ this.searchtext +'\'}')
+                        .get('api/queries/searchNaveTopic?parameters={keyword:\''+ this.searchtext +'\'}')
                         .then(response=>(this.info=response.data))
                         .catch((error) => {
                             this.error_msg="Too many results. Server timeout.";
