@@ -15,12 +15,12 @@
                 <div class="row p-3">
                     <div class="col-sm-2">
                             <select v-on:change="onBookChange()" id="bibBook" class="w-100">
-                                <option v-for="item in bBook" v-bind:value="item.contentItemId">{{item.bbnEName}}</option> 
+                                <option v-for="item in bBook" v-bind:value="item.contentitemid">{{item.displaytext}}</option> 
                             </select>
                     </div>
                     <div class="col-sm-2">
                             <select v-on:change="onChange()" id="bibChapter" class="w-100">
-                                <option v-for="item in bChapter" v-bind:value="item.contentItemId">{{item.displayText}} {{item.eTitle}}</option> 
+                                <option v-for="item in bChapter" v-bind:value="item.contentitemid">{{item.displaytext}} {{item.eTitle}}</option> 
                             </select>
                     </div>
                     <div class="col-sm-2">
@@ -110,18 +110,12 @@
                 mounted(){
                     //load book default Gen
                     axios
-                    .get('api/graphql?query='
-                        +'{bibleBook (orderBy: {contentItemId: ASC}) {'
-                        +'bbnEName,'
-                        +'contentItemId}}')
-                    .then(response=>(this.bBook=response.data.data.bibleBook));
+                    .get('api/queries/getBooks')
+                    .then(response=>(this.bBook=response.data));
                     //load chapter default Gen 1
                     axios
-                    .get('api/graphql?query='
-                        +'{bibleChapter (orderBy: {contentItemId: ASC}, where: {alias: {alias_starts_with: "01"}}) {'
-                        +'displayText,eTitle,'
-                        +'contentItemId}}')
-                    .then(response=>(this.bChapter=response.data.data.bibleChapter));
+                    .get('api/queries/getChaptersByBook')
+                    .then(response=>(this.bChapter=response.data));
                     //load version default UNS (index=4)
                     axios
                     .get('api/queries/getBibleVersions2')
@@ -129,11 +123,8 @@
                     
                     //load default UNS Book 1
                     axios
-                    .get('api/graphql?query='
-                        +'{bibleVerse(where: {alias: {alias_starts_with: "01001"}, AND: {alias: {alias_ends_with: "UNS"}}},'
-                        +'orderBy: {contentItemId: ASC})'
-                        +'{contentItemId, bibVerseId,displayText,scripture,verse,bibBCVold,bibBCV,bbnId}}')
-                    .then(response=>(this.scriptures=response.data.data.bibleVerse));
+                    .get('api/queries/getVersesByChapter')
+                    .then(response=>(this.scriptures=response.data));
                     //load NavTopicVerse for UNS Book 1
                     axios
                         .get('api/queries/getNaveTopicByChapter?parameters={chapterid:"010010001"}')
@@ -151,18 +142,12 @@
                     onBookChange:function(){
                         //load first chapter of the selected book
                         axios
-                        .get('api/graphql?query='
-                            +'{bibleVerse(where: {alias: {alias_starts_with: "'+bibBook.value.substr(0,2)+'001"}, AND: {alias: {alias_ends_with: "'+bibVersion.value+'"}}},'
-                            +'orderBy: {contentItemId: ASC})'
-                            +'{contentItemId, bibVerseId,displayText,scripture,verse,bibBCVold,bibBCV,bbnId}}')
-                        .then(response=>(this.scriptures=response.data.data.bibleVerse));
+                        .get('api/queries/getVersesByChapter?parameters={chapterid:"'+bibBook.value.substr(0,2)+'001",version:"'+bibVersion.value+'"}')
+                        .then(response=>(this.scriptures=response.data));
                         //load chapter list of the selected book
                         axios
-                        .get('api/graphql?query='
-                            +'{bibleChapter (orderBy: {contentItemId: ASC}, where: {alias: {alias_starts_with: "'+bibBook.value.substr(0,2)+'"}}) {'
-                            +'displayText,eTitle,'
-                            +'contentItemId}}')
-                        .then(response=>(this.bChapter=response.data.data.bibleChapter));
+                        .get('api/queries/getChaptersByBook?parameters={bookid:"'+bibBook.value.substr(0,2)+'"}')
+                        .then(response=>(this.bChapter=response.data));
                         bibChapter.selectedIndex=0;
                         //load nave topics of the selected chapter
                         axios
@@ -174,11 +159,8 @@
                     onChange:function(){
                         ////load selected chapter
                         axios
-                        .get('api/graphql?query='
-                            +'{bibleVerse(where: {alias: {alias_starts_with: "'+bibChapter.value.substr(0,5)+'"}, AND: {alias: {alias_ends_with: "'+bibVersion.value+'"}}},'
-                            +'orderBy: {contentItemId: ASC})'
-                            +'{contentItemId, bibVerseId,displayText,scripture,verse,bibBCVold,bibBCV,bbnId}}')
-                        .then(response=>(this.scriptures=response.data.data.bibleVerse));
+                        .get('api/queries/getVersesByChapter?parameters={chapterid:"'+bibChapter.value.substr(0,5)+'",version:"'+bibVersion.value+'"}')
+                        .then(response=>(this.scriptures=response.data));
                         //load nave topics for selected chapter
                         axios
                             .get('api/queries/getNaveTopicByChapter?parameters={chapterid:"'+bibChapter.value+'"}')
