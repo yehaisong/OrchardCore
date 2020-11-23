@@ -108,6 +108,10 @@
                     }
                 },
                 mounted(){
+                    //load version default UNS (index=4)
+                    axios
+                    .get('api/queries/getBibleVersions2')
+                    .then(response=>(this.bVersion=response.data));
                     //load book default Gen
                     axios
                     .get('api/queries/getBooks')
@@ -116,11 +120,6 @@
                     axios
                     .get('api/queries/getChaptersByBook')
                     .then(response=>(this.bChapter=response.data));
-                    //load version default UNS (index=4)
-                    axios
-                    .get('api/queries/getBibleVersions2')
-                    .then(response=>(this.bVersion=response.data));
-                    
                     //load default UNS Book 1
                     axios
                     .get('api/queries/getVersesByChapter')
@@ -131,7 +130,7 @@
                         .then(response=>(this.navtopics=response.data.sort((a,b)=>(a.NaveTopicVerse.VerV.Text>b.NaveTopicVerse.VerV.Text)?1:-1)));
                     //set document title
                     
-                    setTimeout(function(){bibVersion.selectedIndex=4;document.title=bibChapter.options[bibChapter.selectedIndex].text;},1000)
+                    setTimeout(function(){bibVersion.selectedIndex=4;document.title=bibChapter.options[bibChapter.selectedIndex].text;},500)
                 },
                 methods:{
                     showjson:function(){
